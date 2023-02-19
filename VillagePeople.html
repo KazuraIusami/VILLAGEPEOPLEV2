@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+
+	<!-- Village People V2 - Documented 2-19-2023 -->
+	<title>Village People</title>
+		
+			
+		<!-- Conversation Tree list -->
+		<script src ="bogConversationTree.js"></script>
+		<script src ="turnerConversationTree.js"></script>
+		<script src ="harlotConversationTree.js"></script>
+		<script src ="prisonerConversationTree.js"></script>
+		<script src ="ryanConversationTree.js"></script>
+		<script src="ungaConversationTree.js"></script>
+		<script src ="unlockedprisonerConversationTree.js"></script>
+		
+		<!-- CSS -->
+		
+	<style>
+		body {
+			user-select: none;
+			background-color:#b0b0b0;
+			padding:5%;
+			font-family:Arial;
+			color:#444444;
+			line-height:1.8;
+		}
+		.npcpicker {
+			display:inline;
+			background-color:#859E6E;
+			transition: background-color 4s, border 2s, color 4s;
+		}
+		.npcpicker:hover {
+			background-color:#6DB67E;
+			border: 1px solid black;
+			color: #A40000;
+		}
+		h1 {
+			border-bottom: 2px dotted black;
+			border-right: 2px solid black;
+		}
+		h1:hover {
+			background-color:#bbbbbb;
+		}
+		div {
+			margin:5%;
+		}
+		.NPCname {
+			padding:15px;
+			font-size:1.15em;
+			background-color:#bbbbbb;
+			transition: font-size 2s, background-color 3s, color 2s;
+		}
+		.NPCname:hover {
+			font-size: 1.20em;
+			background-color:#595959;
+			color:white;
+		}
+		button {
+			background-color:#0E9900;
+			display:block;
+			border:none;
+			padding:5px;
+			font-family:Arial;
+			font-size:1.15em;
+			transition:border 2s,background-color 1s;
+		}
+		button:hover {
+			border:1px dotted #11B800;
+			background-color: #11BB00;
+		}
+		.optionclass {
+			width:30%;
+			border-bottom: 1px dotted black;
+		}
+		.choiceButton {
+			background-color:#001BC2;
+			color:white;
+			padding:8px;
+			transition:background-color 2s, border-radius 1s, color 4s;
+		}
+		.choiceButton:hover{
+			background-color:#9F0000;
+			border-radius:25px 25px 0px 0px;
+			color:#FFF55D;
+		}
+	</style>
+	
+	
+	
+</head>
+<body>
+		<!-- Buttons for picking NPC's -->
+		<button class="npcpicker" onclick="conversation = bogconversation; current = 'start'; updateDialogue(); current = 'start';">Bog</button>
+		<button class="npcpicker" onclick="conversation = turnerconversation; current = 'start'; updateDialogue();">Turner</button>
+		<button class="npcpicker" onclick="conversation = harlotconversation; current = 'start'; updateDialogue();">Harlot</button>
+		<button class="npcpicker" onclick="conversation = ungaconversation; current = 'start'; updateDialogue();">UngaBunga</button>
+		<button class="npcpicker" id="prisonerelement" onclick="conversation = prisonerconversation; current = 'start'; updateDialogue();">Prisoner</button>
+		<button class="npcpicker" onclick="conversation = ryanconversation; current = 'start'; updateDialogue();">Ryan</button> 
+		
+	<h1>Village People</h1>
+	
+		<!-- Elements -->
+	<p id="dialogue"></p>
+	
+	<div id="options"></div>
+	
+		<!-- Base Script -->
+	<script>
+		// Init the conversation and the current node
+		var conversation = bogconversation;
+		let current = "start";
+		
+		//Update the Window
+		function updateDialogue(){
+			
+			//Define the Elements
+			const dialogueElement = document.getElementById("dialogue");
+			const optionDiv = document.getElementById("options");
+			
+			//Set the prompt being spoken by the NPC
+			dialogueElement.innerHTML ="<span class='NPCname'>" + conversation.NPCName + "</span>" + " > " + conversation[current].text;
+			
+			//Remove all children of the optionDiv
+			while(optionDiv.hasChildNodes()){
+				optionDiv.removeChild(optionDiv.firstChild);
+			};
+			
+			//For every options of the next node
+			for(let i = 0; i < conversation[current].options.length; i++){
+				//Create button
+				let button = document.createElement("button");
+				//change inner html to the text
+				button.innerHTML = conversation[current].options[i].text;
+				
+				button.setAttribute('id', "option"+i);
+				button.setAttribute('class', 'optionclass')
+				
+				optionDiv.appendChild(button);
+				
+				button.addEventListener("click",function(){
+					current = conversation[current].options[i].next;
+					updateDialogue();
+				});
+				
+			};
+			
+			
+		};
+		updateDialogue();
+		
+		
+		//PRISONER LINE
+		const prisonerElement = document.getElementById("prisonerelement");
+		
+		
+		function makeButton(){
+			const freeButton = document.createElement("button");
+			freeButton.innerHTML = "Free the prisoner";
+			freeButton.setAttribute("id", "freeprisonerbutton");
+			freeButton.setAttribute("class", "choiceButton");
+			document.body.appendChild(freeButton);
+			
+			freeButton.addEventListener("click",function(){
+				prisonerElement.innerHTML = "Unlocked Prisoner";
+				conversation = unlockedprisonerconversation;
+				current = "start";
+				updateDialogue();
+				
+				document.body.removeChild(freeButton);
+			});
+			prisonerElement.removeEventListener("click", makeButton);
+		};
+		
+		prisonerElement.addEventListener("click", makeButton);
+	</script>
+</body>
+</html>
